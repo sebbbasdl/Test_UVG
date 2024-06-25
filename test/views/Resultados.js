@@ -1,100 +1,175 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Animated, Image } from 'react-native';
-import { useNavigation, useRoute  } from '@react-navigation/native';
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Navbar from "../components/Navbar";
 import img_estrella_p from '../assets/estrella_preguntas.png';
 import img_estrella_c from '../assets/estrella_correctas.png';
 import img_estrella_i from '../assets/estrella_incorrectas.png';
 import img_conteo_p from '../assets/background_conteo_preguntas.png';
-import img_conteo_moneda from '../assets/background_conteomonedas.png'; 
+import img_conteo_moneda from '../assets/background_conteomonedas.png';
 import img_moneda from '../assets/Moneda.png';
 
 export default function Resultados() {
     const route = useRoute();
-    const { correctas, incorrectas,total, monedas } = route.params;
-    console.log(correctas," " ,incorrectas," " ,total, " " ,monedas )
-    
-    const navigation = useNavigation();
-    const [animacionY] = useState(new Animated.Value(0));
+    const { correctas, incorrectas, total, monedas } = route.params;
+    console.log(correctas, " ", incorrectas, " ", total, " ", monedas)
 
-    const handlePress = () => {
-        Animated.sequence([
-            Animated.timing(animacionY, {
-                toValue: 5,
-                duration: 50,
-                useNativeDriver: true
-            }),
-            Animated.timing(animacionY, {
-                toValue: 0,
-                duration: 50,
-                useNativeDriver: true
-            })
-        ]).start();
-        navigation.navigate('BackgroundScreen');
+    const navigation = useNavigation();
+
+    // Define animaciones a nivel del componente
+    const animacionY = useRef(new Animated.Value(0)).current;
+    const animacionX = useRef(new Animated.Value(0)).current;
+    const animacionOpacidad = useRef(new Animated.Value(1)).current;
+
+    // Crea 5 monedas y propiedades de animaciones de las 5 monedas
+    const monedasAnimadas = useRef(Array.from({ length: 5 }, () => ({
+        animacionY: new Animated.Value(0),
+        animacionX: new Animated.Value(0),
+        animacionOpacidad: new Animated.Value(1),
+        animacionScale: new Animated.Value(1),
+    }))).current;
+
+    const Animacion_Monedas = () => {
+        monedasAnimadas.forEach((moneda, index) => {
+            Animated.sequence([
+                Animated.delay(index * 100), // Delay entre cada moneda
+                Animated.parallel([
+                    Animated.timing(moneda.animacionY, {
+                        toValue: -430,
+                        duration: 500,
+                        useNativeDriver: true
+                    }),
+                    Animated.timing(moneda.animacionX, {
+                        toValue: 110,
+                        duration: 500,
+                        useNativeDriver: true
+                    }),
+                    Animated.timing(moneda.animacionOpacidad, {
+                        toValue: 0.5,
+                        duration: 500,
+                        useNativeDriver: true
+                    }),
+                    Animated.timing(moneda.animacionScale, { 
+                        toValue: 0.5, 
+                        duration: 500,
+                        useNativeDriver: true
+                    })
+                ]),
+                Animated.parallel([
+                    Animated.timing(moneda.animacionY, {
+                        toValue: 0,
+                        duration: 0,
+                        useNativeDriver: true
+                    }),
+                    Animated.timing(moneda.animacionX, {
+                        toValue: 0,
+                        duration: 0,
+                        useNativeDriver: true
+                    }),
+                    Animated.timing(moneda.animacionOpacidad, {
+                        toValue: 1,
+                        duration: 0,
+                        useNativeDriver: true
+                    }),
+                    Animated.timing(moneda.animacionScale, { 
+                        toValue: 1, 
+                        duration: 0,
+                        useNativeDriver: true
+                    })
+                ])
+            ]).start();
+        });
     };
+
+    useEffect(() => {
+        Animacion_Monedas();
+    }, []);
 
     return (
         <View>
-            <Navbar monedas={monedas}/>
-        <View style={styles.container}>
-            <View style={styles.card}>
-                <Text style={styles.titulo}>Buen Trabajo!</Text>
-                <View>
-                    <View style={styles.cont_resultados}>
-                        <View style={styles.subcont_res}>
-                            <Image source={img_estrella_p} style={styles.img_estrellas}></Image>
-                            <View style={styles.img_conteo}>
-                                <Image source={img_conteo_p} style={styles.img}></Image>
-                                <Text style={styles.texto_conteo}>{total}</Text>
-                                <Text style={styles.texto_texto_conteo}>Preguntas</Text>
+            {/*Navbar*/ }
+            <Navbar monedas={monedas} />
+            <View style={styles.container}>
+                {/*Contenedor azul*/ }
+                <View style={styles.card}>
+                    {/*Contenedor titulo*/ }
+                    <Text style={styles.titulo}>Buen Trabajo!</Text>
+                    {/*Contenedor de los resultados (Total preguntas, respuestas correctas y respuestas incorrectas)*/ }
+                    <View>
+                        <View style={styles.cont_resultados}>
+                            <View style={styles.subcont_res}>
+                                <Image source={img_estrella_p} style={styles.img_estrellas}></Image>
+                                <View style={styles.img_conteo}>
+                                    <Image source={img_conteo_p} style={styles.img}></Image>
+                                    <Text style={styles.texto_conteo}>{total}</Text>
+                                    <Text style={styles.texto_texto_conteo}>Preguntas</Text>
+                                </View>
+                            </View>
+                            <View style={styles.subcont_res}>
+                                <Image source={img_estrella_c} style={styles.img_estrellas}></Image>
+                                <View style={styles.img_conteo}>
+                                    <Image source={img_conteo_p} style={styles.img}></Image>
+                                    <Text style={styles.texto_conteo}>{correctas}</Text>
+                                    <Text style={styles.texto_texto_conteo}>Correctas</Text>
+                                </View>
+                            </View>
+                            <View style={styles.subcont_res}>
+                                <Image source={img_estrella_i} style={styles.img_estrellas}></Image>
+                                <View style={styles.img_conteo}>
+                                    <Image source={img_conteo_p} style={styles.img}></Image>
+                                    <Text style={styles.texto_conteo}>{total - correctas}</Text>
+                                    <Text style={styles.texto_texto_conteo}>Incorrectas</Text>
+                                </View>
                             </View>
                         </View>
-                        <View style={styles.subcont_res}>
-                            <Image source={img_estrella_c} style={styles.img_estrellas}></Image>
-                            <View style={styles.img_conteo}>
-                                <Image source={img_conteo_p} style={styles.img}></Image>
-                                <Text style={styles.texto_conteo}>{correctas}</Text>
-                                <Text style={styles.texto_texto_conteo}>Correctas</Text>
-                            </View>
-                        </View>
-                        <View style={styles.subcont_res}>
-                            <Image source={img_estrella_i} style={styles.img_estrellas}></Image>
-                            <View style={styles.img_conteo}>
-                                <Image source={img_conteo_p} style={styles.img}></Image>
-                                <Text style={styles.texto_conteo}>{total-correctas}</Text>
-                                <Text style={styles.texto_texto_conteo}>Incorrectas</Text>
-                            </View>
-                        </View>
-                    </View>
 
-                    <Text style={styles.texto_titulo_moneda}>Monedas obtenidas</Text>
-                    <View style={styles.cont_mo}>
-                        <Image source={img_conteo_moneda} style={styles.img_conteo_m}></Image>
-                        <Image source={img_moneda} style={styles.img_moneda}></Image>
-                        <Text style={styles.texto_moneda}>{monedas}</Text>
-                    </View>
-
-                    <View style={styles.botonContainer}>
-                        <TouchableOpacity
-                            style={[styles.boton, { transform: [{ translateY: animacionY }] }]}
-                            activeOpacity={1}
-                            onPress={() => navigation.navigate('BackgroundScreen')}
-                        >
-                            <Text style={styles.botonTexto}>¡REPETIR MISIÓN!</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={[styles.boton2, { transform: [{ translateY: animacionY }] }]}
-                            activeOpacity={1}
-                            disabled={true}
-                        >
-                            <Text style={styles.botonTexto2}>¡REPETIR MISIÓN!</Text>
-                        </TouchableOpacity>
+                        <Text style={styles.texto_titulo_moneda}>Monedas obtenidas</Text>
+                        {/*Contenedor moneda y contador*/ }
+                        <View style={styles.cont_mo}>
+                            <Image source={img_conteo_moneda} style={styles.img_conteo_m}></Image>
+                            {monedasAnimadas.map((moneda, index) => (
+                                <Animated.Image
+                                    key={index}
+                                    source={img_moneda}
+                                    style={[
+                                        styles.img_moneda,
+                                        {
+                                            transform: [
+                                                { translateY: moneda.animacionY },
+                                                { translateX: moneda.animacionX },
+                                                { scaleX: moneda.animacionScale }, 
+                                                { scaleY: moneda.animacionScale }, 
+                                            ],
+                                            opacity: moneda.animacionOpacidad
+                                        }
+                                    ]}
+                                />
+                            ))}
+                            <Text style={styles.texto_moneda}>{monedas}</Text>
+                        </View>
+                            {/*Boton para repetir Misión*/ }
+                        <View style={styles.botonContainer}>
+                            <TouchableOpacity
+                                style={[styles.boton]}
+                                activeOpacity={1}
+                                onPress={() => navigation.navigate('BackgroundScreen')}
+                            >
+                                <Text style={styles.botonTexto}>¡REPETIR MISIÓN!</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.boton2]}
+                                activeOpacity={1}
+                                disabled={true}
+                            >
+                                <Text style={styles.botonTexto2}>¡REPETIR MISIÓN!</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
+                {/*Contenedor profundidad azul*/ }
+                <View style={styles.card2}></View>
             </View>
-            <View style={styles.card2}></View>
-        </View>
         </View>
     );
 }
@@ -134,9 +209,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginTop: hp(2.5),
         letterSpacing: 1,
-        textShadowColor: 'rgba(0, 0, 0, 0.75)', 
-        textShadowOffset: { width: -1, height: 3 }, 
-        textShadowRadius: 10, 
+        textShadowColor: 'rgba(0, 0, 0, 0.75)',
+        textShadowOffset: { width: -1, height: 3 },
+        textShadowRadius: 10,
     },
     botonContainer: {
         justifyContent: 'center',
@@ -175,12 +250,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     cont_resultados: {
-        display: 'flex',   
+        display: 'flex',
         flexDirection: 'row',
         flexWrap: 'wrap',
         marginTop: hp('2%'),
     },
-    subcont_res: { 
+    subcont_res: {
         width: wp(20),
         height: hp(10),
         marginHorizontal: wp('2%'),
@@ -232,12 +307,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         position: 'relative',
     },
-    img_conteo_m: { 
+    img_conteo_m: {
         width: wp(40),
         height: hp(15),
         resizeMode: 'contain',
         zIndex: 10,
-        
     },
     img_moneda: {
         width: wp(22),
@@ -245,7 +319,7 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
         zIndex: 15,
         position: 'absolute',
-        left: wp(13),   
+        left: wp(13),
     },
     texto_moneda: {
         position: 'absolute',
@@ -259,6 +333,5 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 20,
         textAlign: 'center',
-        
     }
 });

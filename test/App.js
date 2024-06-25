@@ -10,28 +10,25 @@ import Operaciones from './views/Operaciones';
 import Resultados from './views/Resultados';
 
 // Componente para la pantalla de fondo
-const BackgroundScreen = ({ flag }) => (
-  flag ? (
+const BackgroundScreen = ({ screen }) => (
+  screen === 1 ? (
     <ImageBackground source={ImagenFondo} style={styles.image}>
       <StatusBar style="auto" />
       <Instrucciones />
     </ImageBackground>
-  ) : (
+  ) : screen === 2 ? (
     <ImageBackground source={ImagenFondo} style={styles.image}>
       <StatusBar style="auto" />
-      < Operaciones />
+      <Operaciones />
     </ImageBackground>
-  )
-);
-
-const BackgroundScreen2 = () => (
- 
+  ) : (
     <ImageBackground source={ImagenFondo} style={styles.image}>
       <StatusBar style="auto" />
       <Resultados />
     </ImageBackground>
-  
+  )
 );
+
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -40,9 +37,9 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         
-        <Stack.Screen name="BackgroundScreen" component={() => BackgroundScreen({flag: true})} />
-        <Stack.Screen name="Operaciones" component={() => BackgroundScreen({flag: false})} />
-        <Stack.Screen name="Resultados" component={() => BackgroundScreen2()} />
+        <Stack.Screen name="BackgroundScreen" component={() => BackgroundScreen({screen: 1})} />
+        <Stack.Screen name="Operaciones" component={() => BackgroundScreen({screen: 2})} />
+        <Stack.Screen name="Resultados" component={() => BackgroundScreen({screen: 3})} />
         
       </Stack.Navigator>
     </NavigationContainer>

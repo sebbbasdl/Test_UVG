@@ -6,7 +6,6 @@ import {
   Image,
   ImageBackground,
   TouchableOpacity,
-  Animated,
 } from "react-native";
 import Navbar from "../components/Navbar";
 import { useNavigation } from "@react-navigation/native";
@@ -14,6 +13,7 @@ import imagen_linea from "../assets/Linea_titulo.png";
 import imagen_pregunta from "../assets/QuestionMark.png";
 import imagen_check from "../assets/check.png";
 import barra from "../assets/BarraProgresoNaranja.png";
+/*import LottieView from 'lottie-react-native';*/
 
 import {
   widthPercentageToDP as wp,
@@ -22,8 +22,7 @@ import {
 
 export default function Operaciones() {
   const navigation = useNavigation();
-  const [animacionY] = useState(new Animated.Value(0));
-
+  // Pruebas Matematicas en JSON
   const [pruebas] = useState([
     {
       operacion: "3 + 4 x 5",
@@ -58,7 +57,8 @@ export default function Operaciones() {
   const [respuestasCorrectas, setRespuestasCorrectas] = useState(0);
   const [monedas, setMonedas] = useState(0);
 
-  const handlePress = (option) => {
+  const Click_opcion = (option) => {
+    // Si ya se seleccionó una opción, no se puede cambiar
     setSelectedOption(option);
     if (option === pruebaActual.correcta) {
       setRespuestasCorrectas(respuestasCorrectas + 1);
@@ -66,9 +66,9 @@ export default function Operaciones() {
   };
 
   const siguienteOperacion = () => {
-    
-
+    // Si ya se seleccionó una opción, se pasa a la siguiente operación
     if (contador === pruebas.length - 1) {
+      // Si ya se completaron todas las pruebas, se mandan los resultados a la vista "Resultados"
       setMonedas(respuestasCorrectas * 5);
       navigation.navigate("Resultados", {
         correctas: respuestasCorrectas,
@@ -76,20 +76,25 @@ export default function Operaciones() {
         monedas: respuestasCorrectas * 5,
       });
     } else {
+      // Si no, se pasa a la siguiente operación
       setPruebaActual(pruebas[pruebas.indexOf(pruebaActual) + 1]);
       setSelectedOption(null);
       setContador(contador + 1);
     }
   };
 
-  const progreso = contador / pruebas.length;
+  const progreso = contador / pruebas.length; // Progreso en la barra de progreso
 
   return (
     <View>
+      {/*Navbar*/ }
       <Navbar monedas={monedas} />
+      {/*Contenedor de las operaciones*/ }
       <View style={styles.contenedor_operaciones}>
         <View style={styles.cont_ope}>
+          {/*Texto Desafíate*/ }
           <Text style={styles.titulo}>Desafíate</Text>
+          {/*Linea morada (imagen)*/ }
           <Image
             source={imagen_linea}
             style={{
@@ -99,6 +104,7 @@ export default function Operaciones() {
               marginTop: hp(1),
             }}
           />
+          {/*Barra de progreso*/ }
           <View>
             <Text style={styles.texto_barra}>
               Nivel {contador}/{pruebas.length}
@@ -111,25 +117,29 @@ export default function Operaciones() {
             </View>
             <View style={styles.prof_barra}></View>
           </View>
+          {/*Operaciones*/ }
           <View style={styles.cont_subope}>
             <TouchableOpacity disabled={true}>
+              {/*Pregunta*/ }
               <View style={styles.pregunta}>
+                {/*Texto de pregunta*/ }
                 <Text style={styles.texto_pregunta}>
                   {pruebaActual.operacion}
                 </Text>
                 <Text style={styles.texto_pregunta}> = </Text>
+                {/*Imagen de ?*/ }
                 <Image source={imagen_pregunta} style={styles.ima_preg}></Image>
               </View>
               <View style={styles.prof_pregunta}></View>
             </TouchableOpacity>
-
+            {/*Todo el manejo de las opciones, si es correcta o no, aparción de check, animacion "Estrellitas".*/ }
             {[...pruebaActual.incorrectas, pruebaActual.correcta]
               .sort()
               .map((option, index) => (
                 <TouchableOpacity
                   key={index}
                   style={styles.opciones}
-                  onPress={() => handlePress(option)}
+                  onPress={() => Click_opcion(option)}
                   disabled={selectedOption !== null}
                 >
                   <View
@@ -145,7 +155,20 @@ export default function Operaciones() {
                         },
                     ]}
                   >
-                    <Text style={[styles.texto_ope]}>{option}</Text>
+                    {selectedOption === option && option === pruebaActual.correcta ? (
+                      <View>
+                        {/*<LottieView
+                          source={require('../animaciones/Estrellitas.json')}
+                          autoPlay
+                          loop={false}
+                          style={styles.lottie}
+                        />*/}
+                        <Text style={[styles.texto_ope]}>{option}</Text>
+                      </View>
+                      
+                    ) : (
+                      <Text style={[styles.texto_ope]}>{option}</Text>
+                    )}
                     {selectedOption !== null &&
                       selectedOption !== option &&
                       option === pruebaActual.correcta && (
@@ -170,7 +193,7 @@ export default function Operaciones() {
                   ></View>
                 </TouchableOpacity>
               ))}
-
+            {/*Botón de siguiente*/ }
             <TouchableOpacity disabled={false} onPress={siguienteOperacion}>
               <View style={styles.siguiente}>
                 <Text style={styles.texto_siguiente}>SIGUIENTE</Text>
@@ -349,4 +372,14 @@ const styles = StyleSheet.create({
     top: hp(-2),
     left: wp(23),
   },
+  /*lottie: {
+    width: wp(30),
+    height: hp(20),
+    backgroundColor: "transparent",
+    justifyContent: "center",
+    alignContent: "center",
+    position: "absolute",
+    top: hp(-5),
+    left: wp(-10.5),
+  }*/
 });
