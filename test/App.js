@@ -7,6 +7,7 @@ import { StyleSheet, ImageBackground } from 'react-native';
 import ImagenFondo from './assets/Fondo_RutaIterg_720x1600px_ExploraxV2-0.png';
 import Instrucciones from './views/Instrucciones';
 import Operaciones from './views/Operaciones';
+import Resultados from './views/Resultados';
 
 // Componente para la pantalla de fondo
 const BackgroundScreen = ({ flag }) => (
@@ -23,14 +24,26 @@ const BackgroundScreen = ({ flag }) => (
   )
 );
 
+const BackgroundScreen2 = () => (
+ 
+    <ImageBackground source={ImagenFondo} style={styles.image}>
+      <StatusBar style="auto" />
+      <Resultados />
+    </ImageBackground>
+  
+);
+
 export default function App() {
   const Stack = createNativeStackNavigator();
   
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        
         <Stack.Screen name="BackgroundScreen" component={() => BackgroundScreen({flag: true})} />
         <Stack.Screen name="Operaciones" component={() => BackgroundScreen({flag: false})} />
+        <Stack.Screen name="Resultados" component={() => BackgroundScreen2()} />
+        
       </Stack.Navigator>
     </NavigationContainer>
   );

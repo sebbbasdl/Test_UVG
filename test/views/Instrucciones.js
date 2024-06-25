@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Image, TouchableOpacity, Animated } from 'react
 import { useNavigation } from '@react-navigation/native';
 import imagen_linea from '../assets/Linea_titulo.png';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import Navbar from "../components/Navbar";
 
 export default function Instrucciones() {
     
@@ -24,8 +25,10 @@ export default function Instrucciones() {
         ]).start();
         navigation.navigate('Operaciones');
     };
-
+    const monedas = 0;
     return (
+        <View>
+            <Navbar monedas={monedas}/>
         <View style={styles.container}>
         <View style={styles.card}>
             <Text style={styles.titulo}>¡Desafíate!</Text>
@@ -33,19 +36,31 @@ export default function Instrucciones() {
             <Text style={styles.texto}>Supera estos desafíos y empieza a completar la misión de:</Text>
             <Text style={styles.textoN}>Jerarquía de Operaciones</Text>
             <View>
-            <TouchableOpacity
-                style={[styles.boton, { transform: [{ translateY: animacionY }] }]}
-                activeOpacity={1}
-                onPress={() => navigation.navigate('Operaciones')}
-            >
-                <Text style={styles.botonTexto}>¡ACEPTO EL RETO!</Text>
+            <TouchableOpacity >
+                <TouchableOpacity
+                    style={[styles.boton, { transform: [{ translateY: animacionY }] }]}
+                    activeOpacity={1}
+                    onPress={() => navigation.navigate('Operaciones')}
+                >
+                    <Text style={styles.botonTexto}>¡ACEPTO EL RETO!</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[styles.boton2, { transform: [{ translateY: animacionY }] }]}
+                    activeOpacity={1}
+                    onPress={() => navigation.navigate('Operaciones')}
+                    disabled={true}
+                >
+                    <Text style={styles.botonTexto2}>¡ACEPTO EL RETO!</Text>
+                </TouchableOpacity>
             </TouchableOpacity>
-            <View style={styles.boton2} disabled={true} />
+            
+            
             </View>
         </View>
         <View style={styles.card2}>
         </View>
         
+        </View>
         </View>
         
     );
@@ -53,7 +68,6 @@ export default function Instrucciones() {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -76,7 +90,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#123051',
         borderRadius: 20,
         position: 'absolute',
-        top: hp("36%"),
+        top: hp(7),
         zIndex: 5,
     },
     titulo: {
@@ -101,6 +115,8 @@ const styles = StyleSheet.create({
     },
     boton: {
         marginTop: hp('5%'),
+        width: wp('55%'),
+        height: hp('5%'),
         paddingVertical: hp('1%'),
         paddingHorizontal: wp('5%'),
         backgroundColor: '#ffff',
@@ -108,7 +124,7 @@ const styles = StyleSheet.create({
         zIndex: 10,
     },
     botonTexto: {
-        color: '#204D8D',
+        color: '#133362',
         fontSize: 20,
         textAlign: 'center',
         fontWeight: 'bold',
@@ -116,9 +132,17 @@ const styles = StyleSheet.create({
     boton2: {
         position: 'absolute',
         top: hp('5.6%'),
-        width: wp('51%'),
+        width: wp('55%'),
         height: hp('5%'),
+        paddingVertical: hp('1%'),
+        paddingHorizontal: wp('5%'),
         backgroundColor: '#B3B6B7',
         borderRadius: 10,
+    },
+    botonTexto2: {
+        color: '#B3B6B7',
+        fontSize: 20,
+        textAlign: 'center',
+        fontWeight: 'bold',
     },
 });
